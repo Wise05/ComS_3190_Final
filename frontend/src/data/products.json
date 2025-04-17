@@ -1,0 +1,38 @@
+[
+    {
+        "image": "https://m.media-amazon.com/images/I/31NlKo+moCL._SY300_.jpg",
+        "name": "The Tortured Poets Department",
+        "description": "The Tortured Poets Department is the eleventh studio album by the American singer-songwriter Taylor Swift. It was released on April 19, 2024, by Republic Records. Two hours after the album's release, it was expanded into a double album subtitled The Anthology, containing a second volume of songs",
+        "price": 21.99
+    },
+    {
+        "image": "https://m.media-amazon.com/images/I/41q3uhpDctL._SX300_SY300_QL70_FMwebp_.jpg",
+        "name": "1989",
+        "description": "1989 is the fifth studio album by the American singer-songwriter Taylor Swift, released on October 27, 2014, by Big Machine Records. Titled after Swift's birth year as a symbolic rebirth, it was the album that recalibrated her artistic identity from country music to pop.",
+        "price": 6.74
+    },
+    {
+        "image": "https://prodimage.images-bn.com/pimages/0843930007073_p0_v2_s600x595.jpg",
+        "name": "Red",
+        "description": "Red is the fourth studio album by the American singer-songwriter Taylor Swift. It was released on October 22, 2012, by Big Machine Records. Swift designated Red as a breakup album and her last to be promoted as country music.",
+        "price": 18.99
+    },
+    {
+        "image": "https://i.ebayimg.com/images/g/7NUAAOSwZrJgT7PC/s-l1600.webp",
+        "name": "Plini Impulse Voices Vinyl LP",
+        "description": "Forest + Bone Half & Half Vinyl Vanilla Grapefruit Haze  Translucent Blob VinylTest Press Vinyl Art Print 11.5 x 11.5 Bundle Exclusive Black Pelican Slipmat 1.5 Inch double clutch Pelican Enamel pin.",
+        "price": 189.99
+    },
+    {
+        "image": "https://m.media-amazon.com/images/I/617yNbFnfQL._SX355_.jpg",
+        "name": "Arturo Benedetti Michaelangelli Plays Debussy",
+        "description": "This guy rocks.",
+        "price": 29.99
+    },
+    {
+        "image": "https://m.media-amazon.com/images/I/B1pppR4gVKL._CLa%7C2140%2C2000%7C91IaG7fn7dL.png%7C0%2C0%2C2140%2C2000%2B0.0%2C0.0%2C2140.0%2C2000.0_AC_SX385_.png",
+        "name": "School House Rock T Shirt",
+        "description": "Great T-shirt that can be worn to any occasion.",
+        "price": 19.99
+    }
+]
