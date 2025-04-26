@@ -7,7 +7,7 @@ function Layout() {
   return (
     <>
       <Navbar />
-      <main>
+      <main className="pt-8">
         <Outlet /> {/* Route content */}
       </main>
       <Footbar />
