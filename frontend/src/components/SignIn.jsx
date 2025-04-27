@@ -76,12 +76,13 @@ function SignIn() {
             </a>
           </label>
         </div>
-
-        <button
-          type='submit'
-          className='bg-green-500 text-white py-2 rounded hover:bg-green-700 active:bg-green-800'>
-          Create Account
-        </button>
+        <a href='./Home'>
+          <button
+            type='submit'
+            className='bg-green-500 text-white py-2 rounded hover:bg-green-700 active:bg-green-800'>
+            Create Account
+          </button>
+        </a>
       </form>
     </div>
   );
