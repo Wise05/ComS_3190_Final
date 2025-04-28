@@ -9,27 +9,22 @@ import Shop from "./components/Shop";
 import Survey from "./components/Survey";
 import About from "./components/About";
 import SignIn from "./components/SignIn";
+import Profile from "./components/Profile";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Layout route wraps the main content */}
-        <Route path='/' element={<Layout />}>
-          {/* Home route */}
+        <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
-          {/* Login route */}
-          <Route path='/login' element={<Login />} />
-          {/* Artists route */}
-          <Route path='/artists' element={<Artists />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="/artists" element={<Artists />} />
           {/* Shop route with possible nested routes */}
-          <Route path='/shop' element={<Shop />} />
-          {/* Survey route */}
-          <Route path='/survey' element={<Survey />} />
-          {/* About route */}
-          <Route path='/about' element={<About />} />
-          {/* SignIn route */}
-          <Route path='/signin' element={<SignIn />} />
+          <Route path="/shop" element={<Shop />} />
+          <Route path="/survey" element={<Survey />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/signin" element={<SignIn />} />
         </Route>
       </Routes>
     </BrowserRouter>

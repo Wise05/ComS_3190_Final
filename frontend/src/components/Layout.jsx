@@ -7,7 +7,7 @@ function Layout() {
   return (
     <>
       <Navbar />
-      <main className="pt-8">
+      <main className="pt-8 pb-8 min-h-[95vh]">
         <Outlet /> {/* Route content */}
       </main>
       <Footbar />

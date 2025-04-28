@@ -13,7 +13,7 @@ function Navbar() {
         <Link
           to="/"
           className="rounded-full p-2 font-bold flex gap-2
-      hover:bg-green-700 pointer-events-auto"
+      hover:bg-blue-600 pointer-events-auto"
         >
           <img src={Melodify_Logo} alt="Melodify Logo" />
           <p>Home</p>
@@ -21,7 +21,7 @@ function Navbar() {
         <button
           onClick={toggleSearch}
           className="rounded-full p-2 font-bold flex gap-2
-      hover:bg-green-700 pointer-events-auto"
+      hover:bg-blue-600 pointer-events-auto"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -43,7 +43,7 @@ function Navbar() {
         <Link
           to="/shop"
           className="rounded-full p-2 font-bold flex gap-2
-      hover:bg-green-700 pointer-events-auto"
+      hover:bg-blue-600 pointer-events-auto"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -66,20 +66,20 @@ function Navbar() {
         <Link
           to="/login"
           className="rounded-full p-2 font-bold flex gap-2
-      hover:bg-green-700 pointer-events-auto"
+      hover:bg-blue-600 pointer-events-auto"
         >
           <p>Login</p>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
-            stroke-width="1.5"
+            strokeWidth="1.5"
             stroke="currentColor"
-            class="size-6"
+            className="size-6"
           >
             <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeLinecap="round"
+              strokeLinejoin="round"
               d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
             />
           </svg>
