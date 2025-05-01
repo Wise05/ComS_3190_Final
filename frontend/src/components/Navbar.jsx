@@ -1,11 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Melodify_Logo from "../assets/Melodify_Logo.png";
+import Search from "./Search";
 
 function Navbar() {
-  const toggleSearch = () => {
-    console.log("To do!");
-  };
+  const [openSearchBar, setOpenSearchBar] = useState(false);
 
   return (
     <div className="bg-stone-900 h-10 fixed flex inset-0 z-1 pointer-events-none text-white">
@@ -19,7 +18,9 @@ function Navbar() {
           <p>Home</p>
         </Link>
         <button
-          onClick={toggleSearch}
+          onClick={() => {
+            openSearchBar ? setOpenSearchBar(false) : setOpenSearchBar(true);
+          }}
           className="rounded-full p-2 font-bold flex gap-2
       hover:bg-blue-600 pointer-events-auto"
         >
@@ -85,6 +86,7 @@ function Navbar() {
           </svg>
         </Link>
       </div>
+      {openSearchBar ? <Search setOpenSearchBar={setOpenSearchBar} /> : ""}
     </div>
   );
 }

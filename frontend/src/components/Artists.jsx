@@ -1,14 +1,21 @@
 // Zephaniah Gustafson and Koushik Shaganti
 // https://www.theaudiodb.com/free_music_api
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 
 function Artists() {
-  // ------------------------------------------------
-  // BELOW CODE IS FOR TESTING THE API!!!
-  // ------------------------------------------------
+  const [searchParams] = useSearchParams();
+  const query = searchParams.get("q") || "";
   const [artist, setArtist] = useState("");
   const [artistData, setArtistData] = useState(null);
+
+  useEffect(() => {
+    if (query) {
+      setArtist(query);
+      setArtistData(searchArtist(query));
+    }
+  }, [query]);
 
   const searchArtist = async (name) => {
     try {
