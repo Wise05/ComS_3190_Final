@@ -26,7 +26,7 @@ function Search({ setOpenSearchBar }) {
           onChange={(e) => {
             setInput(e.target.value);
           }}
-          className="bg-white text-black outline-white p-2 rounded-l-xl"
+          className="bg-white text-black outline-none p-2 rounded-l-xl"
         />
         <button
           type="submit"
