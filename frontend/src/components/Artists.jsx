@@ -4,7 +4,6 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Slideshow from "./Slideshow";
-import YouTubePlayer from "./YouTubePlayer";
 
 function Artists() {
   const [searchParams] = useSearchParams();
@@ -77,18 +76,7 @@ function Artists() {
         throw new Error("Invalid or missing 'mvid' field in response");
       }
 
-      const videoIds = data.mvids
-        .map((video) => {
-          try {
-            const parsedUrl = new URL(video.strMusicVid);
-            return parsedUrl.searchParams.get("v");
-          } catch {
-            return null;
-          }
-        })
-        .filter((id) => id);
-
-      setVideoData(videoIds);
+      setVideoData(data);
     } catch (error) {
       console.error("Error fetching videos:", error);
       setVideoData(null);
@@ -116,30 +104,57 @@ function Artists() {
   };
 
   return (
-    <div className="p-4 max-w-5xl mx-auto">
-      {artistData ? (
-        <div className="mt-4">
-          <h1 className="text-6xl font-bold text-center pb-6">
-            {artistData.strArtist}
-          </h1>
-          <div className="w-2xl my-2 mx-auto">
-            <Slideshow>{getImages()}</Slideshow>
+    <div>
+      <div className="max-w-5xl p-4 mx-auto">
+        {artistData ? (
+          <div className="mt-4">
+            <h1 className="text-6xl font-bold text-center pb-6">
+              {artistData.strArtist}
+            </h1>
+            <div className="w-2xl my-2 mx-auto">
+              <Slideshow>{getImages()}</Slideshow>
+            </div>
+            <p className="indent-8 pt-5 text-lg">{artistData.strBiographyEN}</p>
           </div>
-          <p className="indent-8 pt-5 text-lg">{artistData.strBiographyEN}</p>
-        </div>
-      ) : (
-        <p>Sorry we could not find that artist.</p>
-      )}
-      {videoData ? (
-        <div>
-          <h2 className="text-4xl font-bold text-center py-4">Artist Songs</h2>
-          {videoData.map((id) => {
-            <YouTubePlayer videoId={id} />;
-          })}
-        </div>
-      ) : (
-        ""
-      )}
+        ) : (
+          <p>Sorry we could not find that artist.</p>
+        )}
+      </div>
+      <div className="max-w-7xl mx-auto">
+        {videoData ? (
+          <div>
+            <h2 className="text-4xl font-bold text-center py-4">
+              Artist Songs
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {videoData.mvids.map((video) => {
+                if (video.strTrackThumb) {
+                  return (
+                    <a
+                      href={video.strMusicVid}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition">
+                        <img
+                          src={video.strTrackThumb}
+                          alt={video.strTrack}
+                          className="w-100 rounded-t-2xl"
+                        />
+                        <h3 className="text-xl font-semibold text-center py-2">
+                          {video.strTrack}
+                        </h3>
+                      </div>
+                    </a>
+                  );
+                }
+              })}
+            </div>
+          </div>
+        ) : (
+          ""
+        )}
+      </div>
     </div>
   );
 }
