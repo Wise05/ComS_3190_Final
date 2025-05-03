@@ -72,11 +72,18 @@ function Artists() {
 
       const data = JSON.parse(text);
 
-      if (!data.mvids || !Array.isArray(data.mvids)) {
-        throw new Error("Invalid or missing 'mvid' field in response");
+      if (!Array.isArray(data.mvids)) {
+        setVideoData(null);
+        return;
       }
 
-      setVideoData(data);
+      let filteredData = data.mvids.filter(
+        (vid) => vid.strTrackThumb && vid.strMusicVid
+      );
+
+      if (filteredData.length === 0) filteredData = null;
+
+      setVideoData(filteredData);
     } catch (error) {
       console.error("Error fetching videos:", error);
       setVideoData(null);
@@ -105,16 +112,19 @@ function Artists() {
 
   return (
     <div>
-      <div className="max-w-5xl p-4 mx-auto">
+      <div>
         {artistData ? (
-          <div className="mt-4">
-            <h1 className="text-6xl font-bold text-center pb-6">
+          <div className="mx-auto">
+            <h1 className="text-6xl  bg-blue-500 font-bold text-white text-center mb-6 py-3">
               {artistData.strArtist}
             </h1>
-            <div className="w-2xl my-2 mx-auto">
+            <div className="sm:w-md md:w-2xl my-2 mx-auto">
               <Slideshow>{getImages()}</Slideshow>
             </div>
-            <p className="indent-8 pt-5 text-lg">{artistData.strBiographyEN}</p>
+            <div className="max-w-5xl mx-auto">
+              <div className="bg-blue-500 w-sm h-3 rounded-full mt-8 mb-3"></div>
+              <p className="indent-8 text-lg">{artistData.strBiographyEN}</p>
+            </div>
           </div>
         ) : (
           <p>Sorry we could not find that artist.</p>
@@ -127,7 +137,7 @@ function Artists() {
               Artist Songs
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {videoData.mvids.map((video) => {
+              {videoData.map((video) => {
                 if (video.strTrackThumb) {
                   return (
                     <a

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 function footbar() {
   return (
-    <div className="bg-stone-900 h-10 relative bottom-0 flex inset-0 z-1 pointer-events-none text-white">
+    <div className="bg-black h-10 relative bottom-0 flex inset-0 z-1 pointer-events-none text-white">
       <div className="pl-3 flex gap-3 h-10">
         <Link
           to="/survey"
