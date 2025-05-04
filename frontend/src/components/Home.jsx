@@ -44,7 +44,7 @@ function Home() {
           </Link>
         </div>
       </div>
-      <div className="max-w-175">
+      <div className="max-w-175 shadow-xl/50">
         <Slideshow autoSlide={true}>
           {stockMusicianPhotos.map((src, i) => (
             <img

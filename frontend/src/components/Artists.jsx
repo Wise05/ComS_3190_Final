@@ -127,7 +127,9 @@ function Artists() {
             </div>
           </div>
         ) : (
-          <p>Sorry we could not find that artist.</p>
+          <p className="mt-8 text-center">
+            Sorry we could not find that artist.
+          </p>
         )}
       </div>
       <div className="max-w-7xl mx-auto">

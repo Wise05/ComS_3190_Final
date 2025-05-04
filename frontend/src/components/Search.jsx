@@ -116,22 +116,3 @@ function Search({ setOpenSearchBar }) {
 }
 
 export default Search;
-{
-  /* <form onSubmit={handleSearch} className="flex justify-center">
-        <input
-          type="text"
-          placeholder="Search . . . "
-          value={input}
-          onChange={(e) => {
-            setInput(e.target.value);
-          }}
-          className="bg-white text-black outline-none p-2 rounded-l-xl"
-        />
-        <button
-          type="submit"
-          className="px-3 py-2 bg-blue-500 text-white rounded-r-xl"
-        >
-          Search
-        </button>
-      </form> */
-}
