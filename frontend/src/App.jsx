@@ -15,16 +15,16 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Layout />}>
+        <Route path='/' element={<Layout />}>
           <Route index element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="/artists" element={<Artists />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='profile' element={<Profile />} />
+          <Route path='/artists' element={<Artists />} />
           {/* Shop route with possible nested routes */}
-          <Route path="/shop" element={<Shop />} />
-          <Route path="/survey" element={<Survey />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/signin" element={<SignIn />} />
+          <Route path='/shop' element={<Shop />} />
+          <Route path='/survey' element={<Survey />} />
+          <Route path='/about' element={<About />} />
+          <Route path='/signin' element={<SignIn />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -92,3 +92,98 @@ app.put("/survey/:email", async (req, res) => {
     res.status(500).send("Error updating survey response");
   }
 });
+
+app.get("/personalProfile", async (req, res) => {
+  try {
+    // Get user from JWT token or session (Assuming JWT-based authentication)
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) {
+      return res.status(401).send("Authorization token is required.");
+    }
+
+    const decoded = jwt.verify(token, "your_secret_key"); // Verify token and decode
+    const userEmail = decoded.email;
+
+    // Fetch user data from database (Assuming MongoDB)
+    const user = await db
+      .collection("personalProfile")
+      .findOne({ email: userEmail });
+
+    if (!user) {
+      return res.status(404).send("User not found.");
+    }
+
+    // Send the user data as response
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    res.status(500).send("Failed to fetch user data.");
+  }
+});
+
+// Add this below other routes
+app.post("/personalProfile", async (req, res) => {
+  try {
+    const { username, email, age, password } = req.body;
+
+    // Optional: check if the user already exists
+    const existingUser = await db
+      .collection("personalProfile")
+      .findOne({ email });
+    if (existingUser) {
+      return res.status(400).send("User with this email already exists.");
+    }
+
+    const result = await db.collection("personalProfile").insertOne({
+      username,
+      email,
+      age,
+      password,
+    });
+
+    res.status(201).send("Account created successfully.");
+  } catch (error) {
+    console.error("Error saving personal profile:", error);
+    res.status(500).send("Server error while creating account.");
+  }
+});
+
+// Endpoint to update the user's password
+app.put("/personalProfile/changePassword", async (req, res) => {
+  try {
+    const { email, currentPassword, newPassword } = req.body;
+
+    // Check if email and password are provided
+    if (!email || !currentPassword || !newPassword) {
+      return res
+        .status(400)
+        .send("Email, current password, and new password are required.");
+    }
+
+    // Find the user by email
+    const user = await db.collection("personalProfile").findOne({ email });
+
+    if (!user) {
+      return res.status(404).send("User not found.");
+    }
+
+    // Check if the current password matches the stored password (passwords should be hashed in a real app)
+    if (user.password !== currentPassword) {
+      return res.status(400).send("Current password is incorrect.");
+    }
+
+    // Update the password
+    const result = await db
+      .collection("personalProfile")
+      .updateOne({ email }, { $set: { password: newPassword } });
+
+    if (result.matchedCount === 0) {
+      return res.status(404).send("User not found.");
+    }
+
+    res.status(200).send("Password updated successfully.");
+  } catch (error) {
+    console.error("Error updating password:", error);
+    res.status(500).send("Error updating password.");
+  }
+});
