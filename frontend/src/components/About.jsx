@@ -49,7 +49,7 @@ const About = () => {
         <a href='./index.html'>
           <button
             className='px-4 py-2 rounded'
-            style={{ backgroundColor: "green", color: "white" }}>
+            style={{ backgroundColor: "blue", color: "white" }}>
             Back to home
           </button>
         </a>
