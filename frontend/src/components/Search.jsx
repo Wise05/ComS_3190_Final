@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search as SearchIcon } from "lucide-react";
 
 function Search({ setOpenSearchBar }) {
   const [input, setInput] = useState("");

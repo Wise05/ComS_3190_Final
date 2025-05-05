@@ -2,6 +2,10 @@ import React, { useEffect, useState } from "react";
 
 function Shop() {
   const [products, setProducts] = useState([]);
+  const [cart, setCart] = useState([]);
+  const [cartTotal, setCartTotal] = useState(0.0);
+  const [step, setStep] = useState(null);
+  const [summaryData, setSummaryData] = useState({});
 
   useEffect(() => {
     const getFakeMerch = async () => {
@@ -23,6 +27,45 @@ function Shop() {
     getFakeMerch();
   }, []);
 
+  const addToCart = (item) => {
+    setCart([...cart, item]);
+  };
+
+  const removeFromCart = (item) => {
+    let hardCopy = [...cart];
+    hardCopy = hardCopy.filter((cartItem) => cartItem.id !== item.id);
+    setCart(hardCopy);
+  };
+
+  const cartItems = cart.map((item) => (
+    <div key={item.id}>
+      <img className="img-fluid" src={item.image} width={150} />
+      {item.title}${item.price}
+    </div>
+  ));
+
+  const total = () => {
+    let totalVal = 0;
+    for (let i = 0; i < cart.length; i++) {
+      totalVal += cart[i].price;
+    }
+
+    setCartTotal(totalVal.toFixed(2));
+  };
+
+  function howManyofThis(id) {
+    let hmot = cart.filter((cartItem) => cartItem.id === id);
+    return hmot.length;
+  }
+
+  const handlePayNowButton = () => {
+    setStep("payment");
+  };
+
+  useEffect(() => {
+    total();
+  }, [cart]);
+
   return (
     <div className="p-6">
       <h2 className="text-4xl font-bold text-center py-4">
@@ -42,6 +85,15 @@ function Shop() {
             />
             <h2 className="text-lg font-semibold">{product.title}</h2>
             <p className="text-gray-600">${product.price}</p>
+            <div className="flex">
+              <button
+                className="bg-blue-500 px-4 py-2 rounded-full font-semi-bold text-white hover:bg-blue-400 mr-auto"
+                onClick={() => addToCart(product)}
+              >
+                add to cart
+              </button>
+              {howManyofThis(product.id)}
+            </div>
           </div>
         ))}
       </div>
