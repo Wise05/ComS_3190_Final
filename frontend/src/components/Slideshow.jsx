@@ -1,3 +1,5 @@
+// Credit: https://github.com/constgenius/CarouselImageSliderReactTailwind by constgenius
+// Minor modifications done
 import React, { useState, useEffect } from "react";
 
 const Slideshow = ({

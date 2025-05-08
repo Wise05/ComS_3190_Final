@@ -64,7 +64,6 @@ function Search({ setOpenSearchBar }) {
 
   const handleOptionClick = (option) => {
     setInput(option);
-    // Need setTimeout to ensure setInput completes before handleSearch runs
     setTimeout(() => {
       handleSearch;
     }, 10);

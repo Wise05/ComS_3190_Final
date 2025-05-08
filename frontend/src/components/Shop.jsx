@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from "react";
 import Cart from "./Cart";
+import PurchaseForm from "./PurchaseForm";
+import PurchaseSummary from "./PurchaseSummary";
 
 function Shop() {
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState([]);
   const [cartTotal, setCartTotal] = useState(0.0);
   const [step, setStep] = useState(null);
-  const [summaryData, setSummaryData] = useState({});
+  const [paymentInfo, setPaymentInfo] = useState({});
+  const [input, setInput] = useState("");
+  const [filteredSearchOptions, setFilteredSearchOptions] = useState([]);
 
   useEffect(() => {
+    // Call the API for fake store data
     const getFakeMerch = async () => {
       try {
         const response = await fetch("https://fakestoreapi.com/products");
@@ -28,6 +33,18 @@ function Shop() {
     getFakeMerch();
   }, []);
 
+  useEffect(() => {
+    // Filter options based on input
+    if (input.trim() === "") {
+      setFilteredSearchOptions(products);
+    } else {
+      const filtered = products.filter((product) =>
+        product.title.toLowerCase().includes(input.toLowerCase())
+      );
+      setFilteredSearchOptions(filtered);
+    }
+  }, [input, products]);
+
   const addToCart = (item) => {
     setCart([...cart, item]);
   };
@@ -37,13 +54,6 @@ function Shop() {
     hardCopy = hardCopy.filter((cartItem) => cartItem.id !== item.id);
     setCart(hardCopy);
   };
-
-  const cartItems = cart.map((item) => (
-    <div key={item.id}>
-      <img className="img-fluid" src={item.image} width={150} />
-      {item.title}${item.price}
-    </div>
-  ));
 
   const total = () => {
     let totalVal = 0;
@@ -59,10 +69,6 @@ function Shop() {
     return hmot.length;
   }
 
-  const handlePayNowButton = () => {
-    setStep("payment");
-  };
-
   useEffect(() => {
     total();
   }, [cart]);
@@ -72,9 +78,16 @@ function Shop() {
       <h2 className="text-4xl font-bold text-center py-4">
         Support Artists by Buying Their Merch
       </h2>
-      <div className="bg-blue-500 w-sm h-3 rounded-full my-3 mx-6"></div>
+      <div className="bg-blue-500 w-sm h-3 rounded-full mb-3 mx-6"></div>
+      <input
+        type="text"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        placeholder="Search for items..."
+        className="bg-white text-black p-2 border rounded-xl my-2 w-md"
+      />
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {products.map((product) => (
+        {filteredSearchOptions.map((product) => (
           <div
             key={product.id}
             className="bg-white rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition p-4"
@@ -90,8 +103,7 @@ function Shop() {
               <button
                 className="bg-blue-500 px-4 py-2 rounded-full font-semi-bold text-white hover:bg-blue-400 mr-auto"
                 onClick={() => {
-                  addToCart(product);
-                  console.log(cart);
+                  step === null ? addToCart(product) : "";
                 }}
               >
                 add to cart
@@ -101,6 +113,8 @@ function Shop() {
           </div>
         ))}
       </div>
+
+      {/* Cart button */}
       {step === null ? (
         <button
           type="button"
@@ -131,9 +145,30 @@ function Shop() {
       {step == "cart" ? (
         <Cart
           cart={cart}
-          setCart={setCart}
           cartTotal={cartTotal}
           setStep={setStep}
+          removeFromCart={removeFromCart}
+        />
+      ) : (
+        ""
+      )}
+      {step == "form" ? (
+        <PurchaseForm
+          cart={cart}
+          cartTotal={cartTotal}
+          setStep={setStep}
+          paymentInfo={paymentInfo}
+          setPaymentInfo={setPaymentInfo}
+        />
+      ) : (
+        ""
+      )}
+      {step == "summary" ? (
+        <PurchaseSummary
+          cart={cart}
+          cartTotal={cartTotal}
+          setStep={setStep}
+          paymentInfo={paymentInfo}
         />
       ) : (
         ""
