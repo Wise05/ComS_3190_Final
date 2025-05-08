@@ -6,15 +6,19 @@ import { Outlet } from "react-router-dom";
 
 function Layout() {
   const [openSearchBar, setOpenSearchBar] = useState(false);
+  const [isSignedIn, setIsSignedIn] = useState(false);
 
   return (
     <>
       <Navbar
         openSearchBar={openSearchBar}
         setOpenSearchBar={setOpenSearchBar}
+        isSignedIn={isSignedIn}
+        setIsSignedIn={setIsSignedIn}
       />
       <main className="pt-8 pb-8 min-h-[95vh]">
-        <Outlet context={{ setOpenSearchBar }} /> {/* Route content */}
+        <Outlet context={{ setOpenSearchBar, isSignedIn, setIsSignedIn }} />{" "}
+        {/* Route content */}
       </main>
       <Footbar />
     </>

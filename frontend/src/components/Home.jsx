@@ -5,6 +5,7 @@ import { useOutletContext } from "react-router-dom";
 
 function Home() {
   const { setOpenSearchBar } = useOutletContext();
+  const { isSignedIn } = useOutletContext();
 
   const stockMusicianPhotos = [
     "https://media.istockphoto.com/id/1125877063/photo/mixed-race-woman-singing-and-playing-guitar.jpg?s=612x612&w=0&k=20&c=23unW_Ugni5lUvAY2nccGkxtWQ5FtkiWgRyyN6wZMFs=",
@@ -22,12 +23,22 @@ function Home() {
         <h1 className="text-4xl font-bold my-10">Shop for their merch.</h1>
         <h1 className="text-4xl font-bold">Review your favorites.</h1>
         <div className="mt-8 flex justify-center gap-3">
-          <Link
-            to="/login"
-            className="bg-blue-500 px-4 py-2 rounded-full font-semi-bold text-white mt-3 hover:bg-blue-400"
-          >
-            Login
-          </Link>
+          {isSignedIn ? (
+            <Link
+              to="/profile"
+              className="bg-blue-500 px-4 py-2 rounded-full font-semi-bold text-white mt-3 hover:bg-blue-400"
+            >
+              Profile
+            </Link>
+          ) : (
+            <Link
+              to="/login"
+              className="bg-blue-500 px-4 py-2 rounded-full font-semi-bold text-white mt-3 hover:bg-blue-400"
+            >
+              Login
+            </Link>
+          )}
+
           <button
             onClick={() => {
               setOpenSearchBar(true);
