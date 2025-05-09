@@ -9,10 +9,12 @@ function Profile() {
     productsInCart: 0,
   });
   const [error, setError] = useState(null);
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   useEffect(() => {
     // Fetch user profile data from the backend endpoint
-    // Queries MongoDB database 'melodify', collection 'personalProfile'
     const userEmail = localStorage.getItem("userEmail"); // Assuming email is stored after login/signup
     if (!userEmail) {
       setError("No user email found. Please log in or sign up.");
@@ -109,6 +111,42 @@ function Profile() {
     }
   };
 
+  const handleChangePassword = async () => {
+    if (newPassword !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    const userEmail = localStorage.getItem("userEmail");
+    if (!userEmail) {
+      setError("No user email found. Please log in or sign up.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:8080/changePassword`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: userEmail,
+          newPassword,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to change password.");
+      }
+
+      setError("Password changed successfully.");
+      setShowChangePassword(false); // Hide password change form after successful update
+    } catch (error) {
+      console.error("Error changing password:", error);
+      setError(error.message);
+    }
+  };
+
   return (
     <div className='flex justify-center items-center min-h-screen bg-gray-100'>
       <div className='p-6 bg-white rounded-lg shadow-lg w-full max-w-md'>
@@ -146,14 +184,56 @@ function Profile() {
           <p>{userData.productsInCart}</p>
         </div>
 
+        {/* Show Change Password Form if no error and data is retrieved */}
+        {userData.username && !error && !showChangePassword && (
+          <div className='my-6'>
+            <button
+              className='w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600'
+              onClick={() => setShowChangePassword(true)}>
+              Change Password
+            </button>
+          </div>
+        )}
+
+        {/* Change Password Form */}
+        {showChangePassword && !error && (
+          <div className='my-6'>
+            <div className='mb-4'>
+              <input
+                type='password'
+                placeholder='New Password'
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className='w-full p-2 border rounded mb-2'
+              />
+            </div>
+            <div className='mb-4'>
+              <input
+                type='password'
+                placeholder='Confirm Password'
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className='w-full p-2 border rounded mb-2'
+              />
+            </div>
+            <button
+              className='w-full bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600'
+              onClick={handleChangePassword}>
+              Update Password
+            </button>
+          </div>
+        )}
+
         {/* Delete Account Button */}
-        <div className='my-6'>
-          <button
-            className='w-full bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600'
-            onClick={handleDeleteAccount}>
-            Delete Account
-          </button>
-        </div>
+        {userData.username && !error && (
+          <div className='my-6'>
+            <button
+              className='w-full bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600'
+              onClick={handleDeleteAccount}>
+              Delete Account
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
