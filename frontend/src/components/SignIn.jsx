@@ -34,7 +34,7 @@ function SignIn() {
 
       if (res.ok) {
         window.alert("Account created successfully!");
-        navigate("/"); // Redirect to home
+        navigate("/"); // Redirect to login or home
       } else {
         const msg = await res.text();
         window.alert(`Failed to create account: ${msg}`);
@@ -43,6 +43,14 @@ function SignIn() {
       console.error("Error submitting form:", error);
       window.alert("An error occurred. Please try again.");
     }
+  };
+
+  const showTerms = () => {
+    alert(`Terms and Conditions:
+1. Your data will be used only for improving the user experience.
+2. Do not share your password with anyone.
+3. Misuse of the platform may result in account suspension.
+4. We respect your privacy and comply with data protection laws.`);
   };
 
   return (
@@ -117,9 +125,12 @@ function SignIn() {
           <input type='checkbox' name='terms' id='terms' required />
           <label htmlFor='terms'>
             I agree to{" "}
-            <a href='/terms_and_conditions' className='text-blue-600 underline'>
+            <button
+              type='button'
+              onClick={showTerms}
+              className='text-blue-600 underline cursor-pointer'>
               terms and conditions
-            </a>
+            </button>
           </label>
         </div>
 

@@ -95,16 +95,34 @@ app.put("/survey/:email", async (req, res) => {
 
 app.get("/personalProfile", async (req, res) => {
   try {
-    // Get user from JWT token or session (Assuming JWT-based authentication)
-    const token = req.headers.authorization?.split(" ")[1];
-    if (!token) {
-      return res.status(401).send("Authorization token is required.");
+    // Fetch all users from the personalProfile collection
+    const users = await db
+      .collection("personalProfile")
+      .find({})
+      .project({ username: 1, email: 1, age: 1, _id: 0 }) // Exclude _id and password
+      .toArray();
+
+    if (users.length === 0) {
+      return res.status(404).send("No users found.");
     }
 
-    const decoded = jwt.verify(token, "your_secret_key"); // Verify token and decode
-    const userEmail = decoded.email;
+    // Send the users data as response
+    res.status(200).json(users);
+  } catch (error) {
+    console.error("Error fetching all users:", error);
+    res.status(500).send("Failed to fetch users.");
+  }
+});
 
-    // Fetch user data from database (Assuming MongoDB)
+app.get("/personalProfile/:email", async (req, res) => {
+  try {
+    // Get user email from URL parameter
+    const userEmail = req.params.email;
+    if (!userEmail) {
+      return res.status(400).send("Email parameter is required.");
+    }
+
+    // Fetch user data from database
     const user = await db
       .collection("personalProfile")
       .findOne({ email: userEmail });
@@ -121,12 +139,11 @@ app.get("/personalProfile", async (req, res) => {
   }
 });
 
-// Add this below other routes
 app.post("/personalProfile", async (req, res) => {
   try {
     const { username, email, age, password } = req.body;
 
-    // Optional: check if the user already exists
+    // Check if the user already exists
     const existingUser = await db
       .collection("personalProfile")
       .findOne({ email });
@@ -185,5 +202,57 @@ app.put("/personalProfile/changePassword", async (req, res) => {
   } catch (error) {
     console.error("Error updating password:", error);
     res.status(500).send("Error updating password.");
+  }
+});
+
+app.delete("/personalProfile/:email", async (req, res) => {
+  try {
+    // Get user email from URL parameter
+    const userEmail = req.params.email;
+    if (!userEmail) {
+      return res.status(400).send("Email parameter is required.");
+    }
+
+    // Delete user from database
+    const result = await db
+      .collection("personalProfile")
+      .deleteOne({ email: userEmail });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).send("User not found.");
+    }
+
+    // Send success response
+    res.status(200).send("User deleted successfully.");
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).send("Failed to delete user.");
+  }
+});
+
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).send("Email and password are required.");
+    }
+
+    // Find user in personalProfile collection
+    const user = await db.collection("personalProfile").findOne({ email });
+
+    if (!user) {
+      return res.status(401).send("User not found.");
+    }
+
+    // Check password
+    if (user.password !== password) {
+      return res.status(401).send("Invalid password.");
+    }
+
+    res.status(200).send("Login successful.");
+  } catch (error) {
+    console.error("Error during login:", error);
+    res.status(500).send("Error during login.");
   }
 });
