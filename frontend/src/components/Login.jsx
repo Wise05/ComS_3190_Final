@@ -11,14 +11,9 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Verify button clicked, submitting form with:", {
-      email,
-      password,
-    });
 
     if (!email || !password) {
       setErrorMsg("Email and password are required.");
-      console.log("Validation failed: Email or password missing");
       return;
     }
 
@@ -27,31 +22,22 @@ function Login() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
+        credentials: "include", // Ensures cookies are sent
       });
 
-      const data = await res.text(); // Expect text response
-      console.log("Backend response:", data, "Status:", res.status);
+      const data = await res.json(); // Expect JSON response
 
       if (res.ok) {
         // Store email in localStorage for Profile.jsx
         localStorage.setItem("userEmail", email);
         setErrorMsg("");
-        console.log("Login successful, redirecting to /profile");
         setIsSignedIn(true);
-        navigate("/");
+        navigate("/"); // Redirect to profile or home page
       } else {
         // Handle backend error messages
-        if (res.status === 401) {
-          setErrorMsg(data); // "User not found." or "Invalid password."
-        } else if (res.status === 400) {
-          setErrorMsg("Email and password are required.");
-        } else {
-          setErrorMsg(data || "Login failed.");
-        }
-        console.log("Login failed with error:", data);
+        setErrorMsg(data.message || "Login failed.");
       }
     } catch (error) {
-      console.error("Error during login:", error);
       setErrorMsg(
         "Failed to connect to the server. Please ensure the backend server is running on http://localhost:8080 and MongoDB is active."
       );
@@ -59,7 +45,6 @@ function Login() {
   };
 
   const handleSignIn = () => {
-    console.log("Sign In button clicked, navigating to /signin");
     navigate("/signin");
   };
 
@@ -104,7 +89,6 @@ function Login() {
         <button
           type="submit"
           className="bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
-          onClick={() => console.log("Verify button clicked")}
         >
           Login
         </button>

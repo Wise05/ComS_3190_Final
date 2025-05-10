@@ -7,9 +7,9 @@ function SignIn() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const username = e.target.Username.value;
-    const email = e.target.Email.value;
-    const age = e.target.Age.value;
+    const username = e.target.Username.value.trim();
+    const email = e.target.Email.value.trim();
+    const age = e.target.Age.value.trim();
     const password = e.target.Password.value;
     const confirmPassword = e.target.ConfirmPassword.value;
 
@@ -32,15 +32,20 @@ function SignIn() {
         body: JSON.stringify(userData),
       });
 
-      if (res.ok) {
+      const data = await res.json();
+
+      if (res.status === 201) {
         window.alert("Account created successfully!");
-        navigate("/"); // Redirect to login or home
+        navigate("/"); // Go to login or home
+      } else if (res.status === 400) {
+        window.alert("Account already exists. Please log in.");
       } else {
-        const msg = await res.text();
-        window.alert(`Failed to create account: ${msg}`);
+        window.alert(
+          `Failed to create account: ${data.message || "Unknown error"}`
+        );
       }
     } catch (error) {
-      console.error("Error submitting form:", error);
+      console.error("Error creating account:", error);
       window.alert("An error occurred. Please try again.");
     }
   };
@@ -54,89 +59,97 @@ function SignIn() {
   };
 
   return (
-    <div className='flex justify-center items-center min-h-screen'>
+    <div className="flex justify-center items-center min-h-screen">
       <form
         onSubmit={handleSubmit}
-        className='flex flex-col gap-4 p-8 border rounded-lg shadow-lg text-center'>
-        <h3 className='text-2xl font-semibold'>Sign In</h3>
+        className="flex flex-col gap-4 p-8 border rounded-lg shadow-lg text-center"
+      >
+        <h3 className="text-2xl font-semibold">Sign In</h3>
 
-        <div className='flex flex-col text-left'>
-          <label htmlFor='Username'>Enter Username</label>
+        <div className="flex flex-col text-left">
+          <label htmlFor="Username">Enter Username</label>
           <input
-            type='text'
-            name='Username'
-            id='Username'
-            placeholder='Username'
+            type="text"
+            name="Username"
+            id="Username"
+            placeholder="Username"
             minLength={8}
             maxLength={20}
             required
-            className='border p-2 rounded'
+            className="border p-2 rounded"
           />
         </div>
 
-        <div className='flex flex-col text-left'>
-          <label htmlFor='Email'>Enter your Email</label>
+        <div className="flex flex-col text-left">
+          <label htmlFor="Email">Enter your Email</label>
           <input
-            type='email'
-            name='Email'
-            id='Email'
-            placeholder='Email Id'
+            type="email"
+            name="Email"
+            id="Email"
+            placeholder="Email Id"
             required
-            className='border p-2 rounded'
+            className="border p-2 rounded"
           />
         </div>
 
-        <div className='flex flex-col text-left'>
-          <label htmlFor='Age'>Enter Age</label>
+        <div className="flex flex-col text-left">
+          <label htmlFor="Age">Enter Age</label>
           <input
-            type='number'
-            name='Age'
-            id='Age'
-            placeholder='Age'
-            className='border p-2 rounded'
-          />
-        </div>
-
-        <div className='flex flex-col text-left'>
-          <label htmlFor='Password'>Enter Password</label>
-          <input
-            type='password'
-            name='Password'
-            id='Password'
-            placeholder='Password'
-            className='border p-2 rounded'
+            type="number"
+            name="Age"
+            id="Age"
+            placeholder="Age"
+            min={1}
+            max={100}
             required
+            className="border p-2 rounded"
           />
         </div>
 
-        <div className='flex flex-col text-left'>
-          <label htmlFor='ConfirmPassword'>Confirm Password</label>
+        <div className="flex flex-col text-left">
+          <label htmlFor="Password">Enter Password</label>
           <input
-            type='password'
-            name='ConfirmPassword'
-            id='ConfirmPassword'
-            placeholder='Confirm Password'
-            className='border p-2 rounded'
+            type="password"
+            name="Password"
+            id="Password"
+            placeholder="Password"
+            minLength={6}
             required
+            className="border p-2 rounded"
           />
         </div>
 
-        <div className='flex items-center gap-2 text-left'>
-          <input type='checkbox' name='terms' id='terms' required />
-          <label htmlFor='terms'>
+        <div className="flex flex-col text-left">
+          <label htmlFor="ConfirmPassword">Confirm Password</label>
+          <input
+            type="password"
+            name="ConfirmPassword"
+            id="ConfirmPassword"
+            placeholder="Confirm Password"
+            minLength={6}
+            required
+            className="border p-2 rounded"
+          />
+        </div>
+
+        <div className="flex items-center gap-2 text-left">
+          <input type="checkbox" name="terms" id="terms" required />
+          <label htmlFor="terms">
             I agree to{" "}
             <button
-              type='button'
+              type="button"
               onClick={showTerms}
-              className='text-blue-600 underline cursor-pointer'>
+              className="text-blue-600 underline cursor-pointer"
+            >
               terms and conditions
             </button>
           </label>
         </div>
 
         <button
-          type='submit'
-          className='bg-green-500 text-white py-2 rounded hover:bg-green-700 active:bg-green-800'>
+          type="submit"
+          className="bg-green-500 text-white py-2 rounded hover:bg-green-700 active:bg-green-800"
+        >
           Create Account
         </button>
       </form>

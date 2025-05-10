@@ -110,7 +110,18 @@ function Artists() {
       />
     ));
   };
+  /*
+  // Get liked songs from backend
+  useEffect(() => {
+    const userEmail = localStorage.getItem("userEmail"); // Assuming email is stored after login/signup
+    if (!userEmail) {
+      setError("No user email found. Please log in or sign up.");
+      return;
+    }
 
+
+  }, [])
+*/
   function isLiked(idTrack) {
     return likedSongs.some((video) => video.idTrack === idTrack);
   }
