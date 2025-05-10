@@ -239,3 +239,150 @@ app.post("/login", async (req, res) => {
   }
 });
 
+app.post("/artist", async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ message: "Email is required to create an artist entry." });
+        }
+
+        const existingArtist = await db.collection("artist").findOne({ email });
+        if (existingArtist) {
+            return res.status(409).json({ message: "Artist entry already exists for this email." });
+        }
+
+        const newArtistEntry = {
+            email,
+            likedSongs: [],
+        };
+
+        const result = await db.collection("artist").insertOne(newArtistEntry);
+        res.status(201).json({ message: "Artist entry created successfully.", insertedId: result.insertedId });
+
+    } catch (error) {
+        console.error("Error creating artist entry:", error);
+        res.status(500).json({ message: "Error creating artist entry." });
+    }
+});
+
+// PUT /artist/like - Add a song to the user's liked songs
+app.put("/artist/like", async (req, res) => {
+    try {
+        const { email, song } = req.body;
+
+        if (!email || !song || !song.id || !song.title || !song.artist) {
+            return res.status(400).json({ message: "Email and song details (id, title, artist) are required to like a song." });
+        }
+
+        const result = await db.collection("artist").updateOne(
+            { email: email },
+            { $addToSet: { likedSongs: song } } // $addToSet prevents duplicate entries
+        );
+
+        if (result.modifiedCount > 0) {
+            res.status(200).json({ message: "Song liked successfully." });
+        } else if (result.matchedCount > 0) {
+            res.status(200).json({ message: "Song already liked." });
+        } else {
+            res.status(404).json({ message: "Artist entry not found for this email." });
+        }
+
+    } catch (error) {
+        console.error("Error liking song:", error);
+        res.status(500).json({ message: "Error liking song." });
+    }
+});
+
+// PUT /artist/unlike - Remove a song from the user's liked songs (using song ID)
+app.put("/artist/unlike", async (req, res) => {
+    try {
+        const { email, songId } = req.body;
+
+        if (!email || !songId) {
+            return res.status(400).json({ message: "Email and songId are required to unlike a song." });
+        }
+
+        const result = await db.collection("artist").updateOne(
+            { email: email },
+            { $pull: { likedSongs: { id: songId } } }
+        );
+
+        if (result.modifiedCount > 0) {
+            res.status(200).json({ message: "Song unliked successfully." });
+        } else if (result.matchedCount > 0) {
+            res.status(200).json({ message: "Song was not liked." });
+        } else {
+            res.status(404).json({ message: "Artist entry not found for this email." });
+        }
+
+    } catch (error) {
+        console.error("Error unliking song:", error);
+        res.status(500).json({ message: "Error unliking song." });
+    }
+});
+
+// GET /artist/:email - Get the liked songs for a specific user
+app.get("/artist/:email", async (req, res) => {
+    try {
+        const { email } = req.params;
+
+        if (!email) {
+            return res.status(400).json({ message: "Email is required to fetch liked songs." });
+        }
+
+        const artistData = await db.collection("artist").findOne({ email: email });
+
+        if (artistData) {
+            res.status(200).json({ likedSongs: artistData.likedSongs });
+        } else {
+            res.status(404).json({ message: "Artist entry not found for this email." });
+        }
+
+    } catch (error) {
+        console.error("Error fetching liked songs:", error);
+        res.status(500).json({ message: "Error fetching liked songs." });
+    }
+});
+
+app.post("/orders", async (req, res) => {
+    try {
+        const { cart, cartTotal, paymentInfo } = req.body;
+
+        if (!cart || !paymentInfo || !paymentInfo.name || !paymentInfo.email || !paymentInfo.address1 || !paymentInfo.city || !paymentInfo.state || !paymentInfo.pincode) {
+            return res.status(400).json({ message: "Order details and customer information are required." });
+        }
+
+        const order = {
+            items: cart.map(item => ({
+                id: item.id,
+                title: item.title,
+                price: item.price,
+                quantity: 1, // Assuming cart contains individual items
+            })),
+            total: cartTotal,
+            customerInfo: {
+                name: paymentInfo.name,
+                email: paymentInfo.email,
+                address1: paymentInfo.address1,
+                address2: paymentInfo.address2,
+                city: paymentInfo.city,
+                state: paymentInfo.state,
+                pincode: paymentInfo.pincode,
+            },
+            paymentDetails: {
+                cardNumber: paymentInfo.cardNumber, // Consider not storing full card details in a real application
+                expiryDate: paymentInfo.expiryDate,
+                cvc: paymentInfo.cvc, // Consider not storing CVC in a real application
+            },
+            orderDate: new Date(),
+        };
+
+        const result = await db.collection("order").insertOne(order);
+        res.status(201).json({ message: "Order placed successfully!", orderId: result.insertedId });
+
+    } catch (error) {
+        console.error("Could not save the order:", error);
+        res.status(500).json({ message: "Error saving the order." });
+    }
+});

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 function PurchaseForm({
   cart,
+  setCart,
   cartTotal,
   setStep,
   paymentInfo,
@@ -9,30 +10,76 @@ function PurchaseForm({
 }) {
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setPaymentInfo({ ...paymentInfo, [name]: value });
+  // Initialize default values to ensure all inputs are controlled from the start
+  const defaultPaymentInfo = {
+    name: "",
+    email: "",
+    address1: "",
+    address2: "",
+    city: "",
+    state: "",
+    pincode: "",
+    cardNumber: "",
+    expiryDate: "",
+    cvc: "",
   };
 
-  const handleSubmit = (e) => {
+  // Use the provided paymentInfo or fall back to default values
+  const formValues = paymentInfo || defaultPaymentInfo;
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setPaymentInfo({ ...formValues, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!/^\d{16}$/.test(paymentInfo.cardNumber)) {
+    if (!/^\d{16}$/.test(formValues.cardNumber)) {
       setErrorMessage("Invalid card number. It should be 16 digits.");
       return;
     }
 
-    if (!/^\d{2}\/\d{2}$/.test(paymentInfo.expiryDate)) {
+    if (!/^\d{2}\/\d{2}$/.test(formValues.expiryDate)) {
       setErrorMessage("Invalid expiry date. Use MM/YY format.");
       return;
     }
 
-    if (!/^\d{3}$/.test(paymentInfo.cvc)) {
+    if (!/^\d{3}$/.test(formValues.cvc)) {
       setErrorMessage("Invalid CVC. It should be 3 digits.");
       return;
     }
 
-    setStep("summary");
+    try {
+      const response = await fetch("http://localhost:8080/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          cart,
+          cartTotal,
+          paymentInfo: formValues,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Order successful:", data);
+        setCart([]);
+        setStep("");
+        alert(data.message); // Or redirect to a success page
+      } else {
+        const errorData = await response.json();
+        console.error("Order failed:", errorData);
+        setErrorMessage(
+          errorData.message || "Failed to place order. Please try again."
+        );
+      }
+    } catch (error) {
+      console.error("There was an error submitting the order:", error);
+      setErrorMessage("Network error. Please check your connection.");
+    }
   };
 
   const itemCounts = cart.reduce((acc, item) => {
@@ -88,7 +135,7 @@ function PurchaseForm({
               <input
                 type="text"
                 name="name"
-                value={paymentInfo.name}
+                value={formValues.name || ""}
                 onChange={handleChange}
                 className="border p-2 w-full"
                 placeholder="Name"
@@ -102,7 +149,7 @@ function PurchaseForm({
               <input
                 type="email"
                 name="email"
-                value={paymentInfo.email}
+                value={formValues.email || ""}
                 onChange={handleChange}
                 className="border p-2 w-full"
                 placeholder="Email"
@@ -120,7 +167,7 @@ function PurchaseForm({
               <input
                 type="text"
                 name="address1"
-                value={paymentInfo.address1}
+                value={formValues.address1 || ""}
                 onChange={handleChange}
                 className="border p-2 w-full"
                 placeholder="Street Address"
@@ -132,7 +179,7 @@ function PurchaseForm({
               <input
                 type="text"
                 name="address2"
-                value={paymentInfo.address2}
+                value={formValues.address2 || ""}
                 onChange={handleChange}
                 className="border p-2 w-full"
                 placeholder="Apt, Suite, etc."
@@ -149,7 +196,7 @@ function PurchaseForm({
               <input
                 type="text"
                 name="city"
-                value={paymentInfo.city}
+                value={formValues.city || ""}
                 onChange={handleChange}
                 className="border p-2 w-full"
                 placeholder="City"
@@ -163,7 +210,7 @@ function PurchaseForm({
               <input
                 type="text"
                 name="state"
-                value={paymentInfo.state}
+                value={formValues.state || ""}
                 onChange={handleChange}
                 className="border p-2 w-full"
                 placeholder="State"
@@ -177,7 +224,7 @@ function PurchaseForm({
               <input
                 type="text"
                 name="pincode"
-                value={paymentInfo.pincode}
+                value={formValues.pincode || ""}
                 onChange={handleChange}
                 className="border p-2 w-full"
                 placeholder="Pincode"
@@ -198,7 +245,7 @@ function PurchaseForm({
                 <input
                   type="text"
                   name="cardNumber"
-                  value={paymentInfo.cardNumber}
+                  value={formValues.cardNumber || ""}
                   onChange={handleChange}
                   className="border p-2 w-full"
                   placeholder="1234 5678 9012 3456"
@@ -212,7 +259,7 @@ function PurchaseForm({
                 <input
                   type="text"
                   name="expiryDate"
-                  value={paymentInfo.expiryDate}
+                  value={formValues.expiryDate || ""}
                   onChange={handleChange}
                   className="border p-2 w-full"
                   placeholder="MM/YY"
@@ -226,7 +273,7 @@ function PurchaseForm({
                 <input
                   type="text"
                   name="cvc"
-                  value={paymentInfo.cvc}
+                  value={formValues.cvc || ""}
                   onChange={handleChange}
                   className="border p-2 w-full"
                   placeholder="123"
@@ -245,11 +292,10 @@ function PurchaseForm({
             <div className="flex text-white">
               <div>
                 <p>Base pay: ${cartTotal}</p>
-                <p>Tax: {"$" + (Number(cartTotal) * 0.07).toFixed(2)}</p>
+                <p>Tax: ${(Number(cartTotal) * 0.07).toFixed(2)}</p>
                 <p>
-                  Total:{" "}
-                  {"$" +
-                    (Number(cartTotal) + Number(cartTotal) * 0.07).toFixed(2)}
+                  Total: $
+                  {(Number(cartTotal) + Number(cartTotal) * 0.07).toFixed(2)}
                 </p>
               </div>
 

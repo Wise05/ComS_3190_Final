@@ -15,7 +15,7 @@ function PurchaseSummary({ cart, cartTotal, setStep, paymentInfo }) {
   return (
     <div className="bg-black p-3 min-h-screen z-0 w-120 fixed right-0 top-10 pointer-events-auto">
       <div className="text-white flex min-width-auto font-bold text-2xl pl-4">
-        <h2>Thank you!</h2>
+        <h2>Your order was successful. Thank you!</h2>
         <button
           onClick={() => {
             setStep(null);

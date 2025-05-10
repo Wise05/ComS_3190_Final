@@ -155,20 +155,11 @@ function Shop() {
       {step == "form" ? (
         <PurchaseForm
           cart={cart}
+          setCart={setCart}
           cartTotal={cartTotal}
           setStep={setStep}
           paymentInfo={paymentInfo}
           setPaymentInfo={setPaymentInfo}
-        />
-      ) : (
-        ""
-      )}
-      {step == "summary" ? (
-        <PurchaseSummary
-          cart={cart}
-          cartTotal={cartTotal}
-          setStep={setStep}
-          paymentInfo={paymentInfo}
         />
       ) : (
         ""

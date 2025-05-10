@@ -11,6 +11,7 @@ function Artists() {
   const [artistData, setArtistData] = useState(null);
   const [videoData, setVideoData] = useState(null);
   const [likedSongs, setLikedSongs] = useState([]);
+  const userEmail = localStorage.getItem("userEmail");
 
   useEffect(() => {
     if (query) {
@@ -19,10 +20,10 @@ function Artists() {
   }, [query]);
 
   useEffect(() => {
-    if (videoData) {
-      console.log("Updated videoData:", videoData);
+    if (videoData && userEmail) {
+      fetchLikedSongs();
     }
-  }, [videoData]);
+  }, [videoData, userEmail]);
 
   const searchArtist = async (name) => {
     try {
@@ -84,7 +85,7 @@ function Artists() {
 
       if (filteredData.length === 0) filteredData = null;
 
-      setVideoData(filteredData);
+      setVideoData(filteredData ? [...filteredData] : null); // Create a new array
     } catch (error) {
       console.error("Error fetching videos:", error);
       setVideoData(null);
@@ -110,25 +111,96 @@ function Artists() {
       />
     ));
   };
-  /*
-  // Get liked songs from backend
-  useEffect(() => {
-    const userEmail = localStorage.getItem("userEmail"); // Assuming email is stored after login/signup
+
+  const fetchLikedSongs = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/artist/${userEmail}`);
+      if (response.ok) {
+        const textData = await response.text();
+
+        try {
+          const data = JSON.parse(textData);
+          if (data && data.likedSongs) {
+            setLikedSongs(data.likedSongs);
+          } else {
+            setLikedSongs([]);
+          }
+        } catch (parseError) {
+          console.error("Error parsing JSON:", parseError, textData);
+          setLikedSongs([]);
+        }
+      } else if (response.status === 404) {
+        setLikedSongs([]);
+        await fetch("http://localhost:8080/artist", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: userEmail }),
+        });
+      } else {
+        console.error("Error fetching liked songs:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching liked songs:", error);
+    }
+  };
+
+  const likeSong = async (video) => {
     if (!userEmail) {
-      setError("No user email found. Please log in or sign up.");
+      console.error("User not logged in.");
       return;
     }
+    try {
+      const response = await fetch("http://localhost:8080/artist/like", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: userEmail,
+          song: {
+            id: video.idTrack,
+            title: video.strTrack,
+            artist: artistData.strArtist,
+          },
+        }),
+      });
+      if (response.ok) {
+        setLikedSongs((prev) => [
+          ...prev,
+          {
+            idTrack: video.idTrack, // Use idTrack here
+            title: video.strTrack,
+            artist: artistData.strArtist,
+          },
+        ]);
+      } else {
+        const errorData = await response.json();
+        console.error("Error liking song:", errorData);
+      }
+    } catch (error) {
+      console.error("Error liking song:", error);
+    }
+  };
 
-
-  }, [])
-*/
-  function isLiked(idTrack) {
-    return likedSongs.some((video) => video.idTrack === idTrack);
-  }
-
-  // useEffect(() => {
-  //   console.log(likedSongs);
-  // }, [likedSongs]);
+  const unlikeSong = async (idTrack) => {
+    if (!userEmail) {
+      console.error("User not logged in.");
+      return;
+    }
+    try {
+      const response = await fetch("http://localhost:8080/artist/unlike", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: userEmail, songId: idTrack }),
+      });
+      if (response.ok) {
+        setLikedSongs((prev) => prev.filter((v) => v.idTrack !== idTrack)); // Use idTrack here
+      } else {
+        const errorData = await response.json();
+        console.error("Error unliking song:", errorData);
+      }
+    } catch (error) {
+      console.error("Error unliking song:", error);
+    }
+  };
 
   return (
     <div>
@@ -184,14 +256,18 @@ function Artists() {
                       <button
                         className="absolute right-1 bottom-1 z-20 pointer-events-auto"
                         onClick={() => {
-                          setLikedSongs((prev) =>
-                            prev.some((v) => v.idTrack === video.idTrack)
-                              ? prev.filter((v) => v.idTrack !== video.idTrack)
-                              : [...prev, video]
-                          );
+                          if (
+                            likedSongs.some((song) => song.id === video.idTrack)
+                          ) {
+                            unlikeSong(video.idTrack);
+                          } else {
+                            likeSong(video);
+                          }
                         }}
                       >
-                        {isLiked(video.idTrack) ? (
+                        {likedSongs.some(
+                          (song) => song.id === video.idTrack
+                        ) ? (
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
