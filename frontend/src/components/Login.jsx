@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useOutletContext } from "react-router-dom";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
+  const { setIsSignedIn } = useOutletContext();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,6 +37,7 @@ function Login() {
         localStorage.setItem("userEmail", email);
         setErrorMsg("");
         console.log("Login successful, redirecting to /profile");
+        setIsSignedIn(true);
         navigate("/");
       } else {
         // Handle backend error messages
@@ -61,53 +64,56 @@ function Login() {
   };
 
   return (
-    <div className='flex justify-center items-center min-h-screen'>
+    <div className="flex justify-center items-center min-h-screen">
       <form
         onSubmit={handleSubmit}
-        className='flex flex-col gap-4 p-8 border rounded-lg shadow-lg'>
-        <h3 className='text-2xl font-semibold text-center'>Login</h3>
+        className="flex flex-col gap-4 p-8 border rounded-lg shadow-lg"
+      >
+        <h3 className="text-2xl font-semibold text-center">Login</h3>
 
-        <div className='flex flex-col'>
-          <label htmlFor='Email'>Enter your Email</label>
+        <div className="flex flex-col">
+          <label htmlFor="Email">Enter your Email</label>
           <input
-            type='email'
-            name='Email'
-            id='Email'
+            type="email"
+            name="Email"
+            id="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder='Email'
-            className='border p-2 rounded'
+            placeholder="Email"
+            className="border p-2 rounded"
           />
         </div>
 
-        <div className='flex flex-col'>
-          <label htmlFor='Password'>Enter your Password</label>
+        <div className="flex flex-col">
+          <label htmlFor="Password">Enter your Password</label>
           <input
-            type='password'
-            name='Password'
-            id='Password'
+            type="password"
+            name="Password"
+            id="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder='Password'
-            className='border p-2 rounded'
+            placeholder="Password"
+            className="border p-2 rounded"
           />
         </div>
 
         {errorMsg && (
-          <div className='text-red-500 text-sm text-center'>{errorMsg}</div>
+          <div className="text-red-500 text-sm text-center">{errorMsg}</div>
         )}
 
         <button
-          type='submit'
-          className='bg-blue-500 text-white py-2 rounded hover:bg-blue-600'
-          onClick={() => console.log("Verify button clicked")}>
+          type="submit"
+          className="bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+          onClick={() => console.log("Verify button clicked")}
+        >
           Login
         </button>
 
         <button
-          type='button'
+          type="button"
           onClick={handleSignIn}
-          className='bg-gray-500 text-white py-2 rounded hover:bg-gray-600'>
+          className="bg-gray-500 text-white py-2 rounded hover:bg-gray-600"
+        >
           Sign In
         </button>
       </form>
