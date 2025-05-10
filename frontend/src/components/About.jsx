@@ -1,8 +1,10 @@
 // Zephaniah Gustafson and Koushik Shaganti
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const About = () => {
   const [courseData, setCourseData] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const data = {
@@ -17,14 +19,14 @@ const About = () => {
   }, []);
 
   return (
-    <div className='flex flex-col items-center mt-10'>
-      <div className='text-center'>
+    <div className="flex flex-col items-center mt-10">
+      <div className="text-center">
         <h1 style={{ color: "rgb(0, 0, 0)" }}>
           <strong>About Authors</strong>
         </h1>
         {courseData && (
           <>
-            <ul id='student-list'>
+            <ul id="student-list">
               {courseData.students.map((student, index) => (
                 <li key={index}>
                   {student.name} - {student.email}
@@ -45,14 +47,16 @@ const About = () => {
         )}
       </div>
 
-      <div className='mt-8'>
-        <a href='./index.html'>
-          <button
-            className='px-4 py-2 rounded'
-            style={{ backgroundColor: "blue", color: "white" }}>
-            Back to home
-          </button>
-        </a>
+      <div className="mt-8">
+        <button
+          className="px-4 py-2 rounded"
+          style={{ backgroundColor: "blue", color: "white" }}
+          onClick={() => {
+            navigate("/");
+          }}
+        >
+          Back to home
+        </button>
       </div>
     </div>
   );

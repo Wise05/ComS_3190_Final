@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Survey() {
   const [formData, setFormData] = useState({
@@ -10,6 +11,7 @@ function Survey() {
     featuresLiked: "",
     suggestions: "",
   });
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -46,6 +48,7 @@ function Survey() {
           featuresLiked: "",
           suggestions: "",
         });
+        navigate("/");
       } else {
         alert("Something went wrong. Please try again.");
       }
@@ -56,19 +59,20 @@ function Survey() {
   };
 
   return (
-    <div className='flex flex-col items-center mt-10'>
-      <h1 className='text-2xl font-bold mb-6'>Melodify - User Survey</h1>
+    <div className="flex flex-col items-center mt-10">
+      <h1 className="text-2xl font-bold mb-6">Melodify - User Survey</h1>
       <form
         onSubmit={handleSubmit}
-        className='flex flex-col gap-4 w-full max-w-md'>
+        className="flex flex-col gap-4 w-full max-w-md"
+      >
         <label>
           Name:
           <input
-            type='text'
-            name='name'
+            type="text"
+            name="name"
             value={formData.name}
             onChange={handleChange}
-            className='border p-2 w-full'
+            className="border p-2 w-full"
             required
           />
         </label>
@@ -76,11 +80,11 @@ function Survey() {
         <label>
           Email:
           <input
-            type='email'
-            name='email'
+            type="email"
+            name="email"
             value={formData.email}
             onChange={handleChange}
-            className='border p-2 w-full'
+            className="border p-2 w-full"
             required
           />
         </label>
@@ -88,19 +92,19 @@ function Survey() {
         <label>
           Favorite Artist:
           <input
-            type='text'
-            name='favoriteArtist'
+            type="text"
+            name="favoriteArtist"
             value={formData.favoriteArtist}
             onChange={handleChange}
-            className='border p-2 w-full'
+            className="border p-2 w-full"
             required
           />
         </label>
 
         {/* Website Rating */}
-        <label className='flex flex-col'>
+        <label className="flex flex-col">
           How would you rate our website?
-          <div className='flex space-x-2 mt-2'>
+          <div className="flex space-x-2 mt-2">
             {[1, 2, 3, 4, 5].map((star) => (
               <span
                 key={`website-${star}`}
@@ -109,7 +113,8 @@ function Survey() {
                   fontSize: "2rem",
                   cursor: "pointer",
                   color: star <= formData.websiteRating ? "gold" : "gray",
-                }}>
+                }}
+              >
                 ★
               </span>
             ))}
@@ -117,9 +122,9 @@ function Survey() {
         </label>
 
         {/* Shopping Experience Rating */}
-        <label className='flex flex-col'>
+        <label className="flex flex-col">
           How would you rate your shopping experience?
-          <div className='flex space-x-2 mt-2'>
+          <div className="flex space-x-2 mt-2">
             {[1, 2, 3, 4, 5].map((star) => (
               <span
                 key={`shopping-${star}`}
@@ -131,7 +136,8 @@ function Survey() {
                   cursor: "pointer",
                   color:
                     star <= formData.shoppingExperienceRating ? "gold" : "gray",
-                }}>
+                }}
+              >
                 ★
               </span>
             ))}
@@ -141,11 +147,11 @@ function Survey() {
         <label>
           What features did you like the most?
           <textarea
-            name='featuresLiked'
+            name="featuresLiked"
             value={formData.featuresLiked}
             onChange={handleChange}
-            className='border p-2 w-full'
-            rows='3'
+            className="border p-2 w-full"
+            rows="3"
             required
           />
         </label>
@@ -153,17 +159,18 @@ function Survey() {
         <label>
           Any suggestions for us?
           <textarea
-            name='suggestions'
+            name="suggestions"
             value={formData.suggestions}
             onChange={handleChange}
-            className='border p-2 w-full'
-            rows='3'
+            className="border p-2 w-full"
+            rows="3"
           />
         </label>
 
         <button
-          type='submit'
-          className='bg-blue-500 text-white p-2 rounded hover:bg-blue-600'>
+          type="submit"
+          className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+        >
           Submit Survey
         </button>
       </form>
