@@ -29,11 +29,13 @@ app.listen(port, async () => {
   console.log("App listening at http://%s:%s", host, port);
 });
 
+// Fetch all artists
 app.get("/artist", async (req, res) => {
   const results = await db.collection("artist").find({}).limit(100).toArray();
   res.status(200).send(results);
 });
 
+// Fetch artist by name
 app.get("/artist/:name", async (req, res) => {
   try {
     const name = req.params.name;
@@ -45,6 +47,7 @@ app.get("/artist/:name", async (req, res) => {
   }
 });
 
+// Submit survey
 app.post("/survey", async (req, res) => {
   try {
     const newSurvey = {
@@ -65,6 +68,7 @@ app.post("/survey", async (req, res) => {
   }
 });
 
+// Update survey response
 app.put("/survey/:email", async (req, res) => {
   try {
     const email = req.params.email;
@@ -93,9 +97,9 @@ app.put("/survey/:email", async (req, res) => {
   }
 });
 
+// Fetch all users' personal profiles
 app.get("/personalProfile", async (req, res) => {
   try {
-    // Fetch all users from the personalProfile collection
     const users = await db
       .collection("personalProfile")
       .find({})
@@ -106,7 +110,6 @@ app.get("/personalProfile", async (req, res) => {
       return res.status(404).send("No users found.");
     }
 
-    // Send the users data as response
     res.status(200).json(users);
   } catch (error) {
     console.error("Error fetching all users:", error);
@@ -114,15 +117,14 @@ app.get("/personalProfile", async (req, res) => {
   }
 });
 
+// Fetch personal profile by email
 app.get("/personalProfile/:email", async (req, res) => {
   try {
-    // Get user email from URL parameter
     const userEmail = req.params.email;
     if (!userEmail) {
       return res.status(400).send("Email parameter is required.");
     }
 
-    // Fetch user data from database
     const user = await db
       .collection("personalProfile")
       .findOne({ email: userEmail });
@@ -131,7 +133,6 @@ app.get("/personalProfile/:email", async (req, res) => {
       return res.status(404).send("User not found.");
     }
 
-    // Send the user data as response
     res.status(200).json(user);
   } catch (error) {
     console.error("Error fetching user data:", error);
@@ -139,11 +140,11 @@ app.get("/personalProfile/:email", async (req, res) => {
   }
 });
 
+// Register new user for personal profile
 app.post("/personalProfile", async (req, res) => {
   try {
     const { username, email, age, password } = req.body;
 
-    // Check if the user already exists
     const existingUser = await db
       .collection("personalProfile")
       .findOne({ email });
@@ -165,31 +166,27 @@ app.post("/personalProfile", async (req, res) => {
   }
 });
 
-// Endpoint to update the user's password
+// Update password
 app.put("/personalProfile/changePassword", async (req, res) => {
   try {
     const { email, currentPassword, newPassword } = req.body;
 
-    // Check if email and password are provided
     if (!email || !currentPassword || !newPassword) {
       return res
         .status(400)
         .send("Email, current password, and new password are required.");
     }
 
-    // Find the user by email
     const user = await db.collection("personalProfile").findOne({ email });
 
     if (!user) {
       return res.status(404).send("User not found.");
     }
 
-    // Check if the current password matches the stored password (passwords should be hashed in a real app)
     if (user.password !== currentPassword) {
       return res.status(400).send("Current password is incorrect.");
     }
 
-    // Update the password
     const result = await db
       .collection("personalProfile")
       .updateOne({ email }, { $set: { password: newPassword } });
@@ -205,15 +202,14 @@ app.put("/personalProfile/changePassword", async (req, res) => {
   }
 });
 
+// Delete personal profile by email
 app.delete("/personalProfile/:email", async (req, res) => {
   try {
-    // Get user email from URL parameter
     const userEmail = req.params.email;
     if (!userEmail) {
       return res.status(400).send("Email parameter is required.");
     }
 
-    // Delete user from database
     const result = await db
       .collection("personalProfile")
       .deleteOne({ email: userEmail });
@@ -222,7 +218,6 @@ app.delete("/personalProfile/:email", async (req, res) => {
       return res.status(404).send("User not found.");
     }
 
-    // Send success response
     res.status(200).send("User deleted successfully.");
   } catch (error) {
     console.error("Error deleting user:", error);
@@ -230,6 +225,7 @@ app.delete("/personalProfile/:email", async (req, res) => {
   }
 });
 
+// Login functionality
 app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -238,14 +234,12 @@ app.post("/login", async (req, res) => {
       return res.status(400).send("Email and password are required.");
     }
 
-    // Find user in personalProfile collection
     const user = await db.collection("personalProfile").findOne({ email });
 
     if (!user) {
       return res.status(401).send("User not found.");
     }
 
-    // Check password
     if (user.password !== password) {
       return res.status(401).send("Invalid password.");
     }
