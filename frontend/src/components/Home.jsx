@@ -5,7 +5,7 @@ import { useOutletContext } from "react-router-dom";
 
 function Home() {
   const { setOpenSearchBar } = useOutletContext();
-  const { isSignedIn } = useOutletContext();
+  const isSignedIn = localStorage.getItem("userEmail");
 
   const stockMusicianPhotos = [
     "https://media.istockphoto.com/id/1125877063/photo/mixed-race-woman-singing-and-playing-guitar.jpg?s=612x612&w=0&k=20&c=23unW_Ugni5lUvAY2nccGkxtWQ5FtkiWgRyyN6wZMFs=",

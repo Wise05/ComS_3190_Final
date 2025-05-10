@@ -4,7 +4,13 @@ const bodyParser = require("body-parser");
 const { MongoClient } = require("mongodb");
 
 const app = express();
-app.use(cors());
+
+const corsOptions = {
+  origin: 'http://localhost:5173', 
+  credentials: true, 
+};
+app.use(cors(corsOptions));
+
 app.use(bodyParser.json());
 
 const port = 8080;
@@ -27,24 +33,6 @@ async function connectToMongo() {
 app.listen(port, async () => {
   await connectToMongo();
   console.log("App listening at http://%s:%s", host, port);
-});
-
-// Fetch all artists
-app.get("/artist", async (req, res) => {
-  const results = await db.collection("artist").find({}).limit(100).toArray();
-  res.status(200).send(results);
-});
-
-// Fetch artist by name
-app.get("/artist/:name", async (req, res) => {
-  try {
-    const name = req.params.name;
-    const results = await db.collection("artist").find({ name }).toArray();
-    res.status(200).send(results);
-  } catch (error) {
-    console.error("Error fetching artist by name:", error);
-    res.status(500).send("Error fetching artist by name");
-  }
 });
 
 // Submit survey
@@ -250,3 +238,4 @@ app.post("/login", async (req, res) => {
     res.status(500).send("Error during login.");
   }
 });
+
