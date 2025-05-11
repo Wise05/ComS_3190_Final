@@ -202,6 +202,10 @@ function Artists() {
     }
   };
 
+  useEffect(() => {
+    console.log("likedSongs updated:", likedSongs);
+  }, [likedSongs]);
+
   return (
     <div>
       <div>
@@ -257,7 +261,9 @@ function Artists() {
                         className="absolute right-1 bottom-1 z-20 pointer-events-auto"
                         onClick={() => {
                           if (
-                            likedSongs.some((song) => song.id === video.idTrack)
+                            likedSongs.some(
+                              (song) => song.idTrack === video.idTrack
+                            )
                           ) {
                             unlikeSong(video.idTrack);
                           } else {
@@ -266,7 +272,7 @@ function Artists() {
                         }}
                       >
                         {likedSongs.some(
-                          (song) => song.id === video.idTrack
+                          (song) => song.idTrack === video.idTrack
                         ) ? (
                           <svg
                             xmlns="http://www.w3.org/2000/svg"

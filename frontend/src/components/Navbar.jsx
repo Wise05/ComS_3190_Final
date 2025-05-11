@@ -4,9 +4,10 @@ import Melodify_Logo from "../assets/Melodify_Logo.png";
 import Search from "./Search";
 import { useEffect } from "react";
 
-function Navbar({ openSearchBar, setOpenSearchBar }) {
-  const isSignedIn = localStorage.getItem("userEmail");
-  useEffect(() => {}, [isSignedIn]);
+function Navbar({ openSearchBar, setOpenSearchBar, isSignedIn }) {
+  useEffect(() => {
+    console.log(isSignedIn);
+  }, [isSignedIn]);
   return (
     <div className="bg-stone-900 h-10 fixed flex inset-0 z-1 text-white">
       <div className="pl-3 flex gap-3 h-10">

@@ -7,6 +7,7 @@ function Login() {
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
+  const { setIsSignedIn } = useOutletContext();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,6 +31,7 @@ function Login() {
         // Store email in localStorage for Profile.jsx
         localStorage.setItem("userEmail", email);
         setErrorMsg("");
+        setIsSignedIn(true);
         navigate("/"); // Redirect to profile or home page
       } else {
         // Handle backend error messages
