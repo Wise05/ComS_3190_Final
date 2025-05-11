@@ -271,21 +271,28 @@ app.put("/artist/like", async (req, res) => {
     try {
         const { email, song } = req.body;
 
-        if (!email || !song || !song.id || !song.title || !song.artist) {
-            return res.status(400).json({ message: "Email and song details (id, title, artist) are required to like a song." });
+        if (!email || !song || !song.idTrack || !song.title || !song.artist) {
+            return res.status(400).json({ message: "Email and complete song info (idTrack, title, artist) are required." });
         }
 
         const result = await db.collection("artist").updateOne(
             { email: email },
-            { $addToSet: { likedSongs: song } } // $addToSet prevents duplicate entries
+            {
+                $addToSet: {
+                    likedSongs: {
+                        idTrack: song.idTrack,
+                        title: song.title,
+                        artist: song.artist,
+                    },
+                },
+            },
+            { upsert: true }
         );
 
-        if (result.modifiedCount > 0) {
+        if (result.modifiedCount > 0 || result.upsertedCount > 0) {
             res.status(200).json({ message: "Song liked successfully." });
-        } else if (result.matchedCount > 0) {
-            res.status(200).json({ message: "Song already liked." });
         } else {
-            res.status(404).json({ message: "Artist entry not found for this email." });
+            res.status(200).json({ message: "Song was already liked." });
         }
 
     } catch (error) {
@@ -293,6 +300,7 @@ app.put("/artist/like", async (req, res) => {
         res.status(500).json({ message: "Error liking song." });
     }
 });
+
 
 // PUT /artist/unlike - Remove a song from the user's liked songs (using song ID)
 app.put("/artist/unlike", async (req, res) => {
@@ -305,7 +313,7 @@ app.put("/artist/unlike", async (req, res) => {
 
         const result = await db.collection("artist").updateOne(
             { email: email },
-            { $pull: { likedSongs: { id: songId } } }
+            { $pull: { likedSongs: { idTrack: songId } } }
         );
 
         if (result.modifiedCount > 0) {
@@ -384,5 +392,22 @@ app.post("/orders", async (req, res) => {
     } catch (error) {
         console.error("Could not save the order:", error);
         res.status(500).json({ message: "Error saving the order." });
+    }
+});
+
+app.get("/orders", async (req, res) => {
+    try {
+        const { email } = req.query;
+
+        if (!email) {
+            return res.status(400).json({ message: "Email query parameter is required." });
+        }
+
+        const orders = await db.collection("order").find({ "customerInfo.email": email }).toArray();
+
+        res.status(200).json(orders);
+    } catch (error) {
+        console.error("Could not retrieve orders:", error);
+        res.status(500).json({ message: "Error retrieving orders." });
     }
 });

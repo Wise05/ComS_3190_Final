@@ -15,7 +15,7 @@ function Artists() {
 
   useEffect(() => {
     if (query) {
-      setArtistData(searchArtist(query));
+      searchArtist(query);
     }
   }, [query]);
 
@@ -156,7 +156,7 @@ function Artists() {
         body: JSON.stringify({
           email: userEmail,
           song: {
-            id: video.idTrack,
+            idTrack: video.idTrack,
             title: video.strTrack,
             artist: artistData.strArtist,
           },
@@ -260,11 +260,11 @@ function Artists() {
                       <button
                         className="absolute right-1 bottom-1 z-20 pointer-events-auto"
                         onClick={() => {
-                          if (
-                            likedSongs.some(
-                              (song) => song.idTrack === video.idTrack
-                            )
-                          ) {
+                          const isLiked = likedSongs.some(
+                            (song) =>
+                              (song.idTrack || song.id) === video.idTrack
+                          );
+                          if (isLiked) {
                             unlikeSong(video.idTrack);
                           } else {
                             likeSong(video);

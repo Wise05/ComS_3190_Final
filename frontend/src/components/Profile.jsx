@@ -13,6 +13,8 @@ function Profile() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [orders, setOrders] = useState([]);
+  const [likedSongs, setLikedSongs] = useState([]);
 
   useEffect(() => {
     const email = localStorage.getItem("userEmail");
@@ -83,13 +85,83 @@ function Profile() {
     }
   };
 
+  // Fetch Orders
+  useEffect(() => {
+    const email = localStorage.getItem("userEmail");
+    if (!email) return;
+
+    const fetchOrders = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/orders?email=${encodeURIComponent(email)}`
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch orders");
+        }
+        const data = await response.json();
+        console.log(data);
+        setOrders(data);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      } finally {
+        console.log("loading");
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
+  // Fetch Liked Songs
+  useEffect(() => {
+    const email = localStorage.getItem("userEmail");
+    if (!email) return;
+
+    const fetchLikedSongs = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/artist/${email}`);
+        if (response.ok) {
+          const textData = await response.text();
+          console.log("Response Text:", textData);
+
+          try {
+            const data = JSON.parse(textData);
+            console.log("Parsed Data:", JSON.stringify(data, null, 2));
+
+            if (data && data.likedSongs) {
+              setLikedSongs(data.likedSongs);
+            } else {
+              setLikedSongs([]);
+            }
+          } catch (parseError) {
+            console.error("Error parsing JSON:", parseError, textData);
+            setLikedSongs([]);
+          }
+        } else if (response.status === 404) {
+          setLikedSongs([]);
+          await fetch("http://localhost:8080/artist", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email }),
+          });
+        } else {
+          console.error("Error fetching liked songs:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching liked songs:", error);
+      }
+    };
+
+    fetchLikedSongs();
+  }, []);
+
   return (
-    <div className='flex justify-center items-center min-h-screen bg-gray-100'>
-      <div className='p-6 bg-white rounded-lg shadow-lg w-full max-w-md'>
-        <h2 className='text-2xl font-semibold text-center mb-4'>Profile</h2>
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="p-6 bg-white rounded-lg shadow-lg w-full max-w-md">
+        <h2 className="text-2xl font-semibold text-center mb-4">Profile</h2>
 
         {error && (
-          <div className='bg-red-100 text-red-700 p-2 mb-4'>{error}</div>
+          <div className="bg-red-100 text-red-700 p-2 mb-4">{error}</div>
         )}
 
         <p>
@@ -102,51 +174,94 @@ function Profile() {
           <strong>Age:</strong> {userData.age}
         </p>
 
-        <div className='mt-4'>
+        <div className="mt-4">
           <button
             onClick={() => setShowChangePassword(!showChangePassword)}
-            className='bg-blue-500 text-white px-4 py-2 rounded'>
+            className="bg-blue-500 text-white px-4 py-2 rounded"
+          >
             Change Password
           </button>
         </div>
 
         {showChangePassword && (
-          <div className='mt-4'>
+          <div className="mt-4">
             <input
-              type='password'
-              placeholder='Current Password'
+              type="password"
+              placeholder="Current Password"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
-              className='w-full p-2 border rounded mb-2'
+              className="w-full p-2 border rounded mb-2"
             />
             <input
-              type='password'
-              placeholder='New Password'
+              type="password"
+              placeholder="New Password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className='w-full p-2 border rounded mb-2'
+              className="w-full p-2 border rounded mb-2"
             />
             <input
-              type='password'
-              placeholder='Confirm Password'
+              type="password"
+              placeholder="Confirm Password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className='w-full p-2 border rounded mb-2'
+              className="w-full p-2 border rounded mb-2"
             />
             <button
               onClick={handleChangePassword}
-              className='w-full bg-green-500 text-white py-2 rounded'>
+              className="w-full bg-green-500 text-white py-2 rounded"
+            >
               Update Password
             </button>
           </div>
         )}
 
-        <div className='mt-4'>
+        <div className="mt-4">
           <button
             onClick={handleDeleteAccount}
-            className='bg-red-500 text-white px-4 py-2 rounded'>
+            className="bg-red-500 text-white px-4 py-2 rounded"
+          >
             Delete Account
           </button>
+        </div>
+        <div>
+          <h2>Liked Songs</h2>
+
+          {likedSongs.length > 0 ? (
+            <div className="flex overflow-x-auto gap-2">
+              {likedSongs.map((song) => {
+                return (
+                  <div
+                    key={song.idTrack}
+                    className="h-30 border rounded-lg p-3"
+                  >
+                    <p>Title: {song.title}</p>
+                    <p>Artist: {song.artist}</p>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <p>You have not liked any songs</p>
+          )}
+        </div>
+        <div>
+          <h2>Orders</h2>
+          <div className="className=" flex overflow-x-auto gap-2>
+            {orders.length > 0 ? (
+              <div className="border rounded-lg p-3">
+                {orders.map((order, orderIndex) => (
+                  <div key={orderIndex}>
+                    <h4>Order #{orderIndex + 1}</h4>
+                    {order.items.map((item, itemIndex) => (
+                      <p key={itemIndex}>{item.title}</p>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>You haven't made any orders</p>
+            )}
+          </div>
         </div>
       </div>
     </div>
