@@ -1,5 +1,7 @@
 // Koushik and Zevan
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useOutletContext } from "react-router-dom";
 
 function Profile() {
   const [userData, setUserData] = useState({
@@ -16,6 +18,8 @@ function Profile() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [orders, setOrders] = useState([]);
   const [likedSongs, setLikedSongs] = useState([]);
+  const navigate = useNavigate();
+  const { setIsSignedIn } = useOutletContext();
 
   // get user info on first render
   useEffect(() => {
@@ -178,6 +182,13 @@ function Profile() {
     fetchLikedSongs();
   }, []);
 
+  const logOut = () => {
+    localStorage.removeItem("userEmail");
+    setUserData({});
+    setIsSignedIn(false);
+    navigate("/");
+  };
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="p-6 bg-white rounded-lg shadow-lg w-full max-w-md">
@@ -238,7 +249,7 @@ function Profile() {
           </div>
         )}
 
-        {/* Delete password */}
+        {/* Delete account */}
         <div className="mt-4">
           <button
             onClick={handleDeleteAccount}
@@ -248,6 +259,17 @@ function Profile() {
           </button>
         </div>
         <div>
+          <div className="mt-4">
+            <button
+              onClick={() => {
+                logOut();
+              }}
+              className="bg-green-500 text-white px-4 py-2 rounded"
+            >
+              Log Out
+            </button>
+          </div>
+          <div></div>
           <h2>Liked Songs</h2>
 
           {likedSongs.length > 0 ? (
