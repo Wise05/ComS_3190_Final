@@ -1,3 +1,4 @@
+// Koushik and Zevan
 import React, { useState, useEffect } from "react";
 
 function Profile() {
@@ -16,6 +17,7 @@ function Profile() {
   const [orders, setOrders] = useState([]);
   const [likedSongs, setLikedSongs] = useState([]);
 
+  // get user info on first render
   useEffect(() => {
     const email = localStorage.getItem("userEmail");
     if (!email) {
@@ -112,6 +114,27 @@ function Profile() {
     fetchOrders();
   }, []);
 
+  // delete orders
+  const handleDeleteOrder = async (orderId) => {
+    try {
+      const response = await fetch(`http://localhost:8080/orders/${orderId}`, {
+        method: "DELETE",
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log("Deleted order:", orderId);
+        setOrders((prev) => prev.filter((order) => order._id !== orderId));
+        alert("Successfully deleted order");
+      } else {
+        console.error("Failed to delete order:", data.message);
+      }
+    } catch (error) {
+      console.error("Error deleting order:", error);
+    }
+  };
+
   // Fetch Liked Songs
   useEffect(() => {
     const email = localStorage.getItem("userEmail");
@@ -173,7 +196,7 @@ function Profile() {
         <p>
           <strong>Age:</strong> {userData.age}
         </p>
-
+        {/* Password change */}
         <div className="mt-4">
           <button
             onClick={() => setShowChangePassword(!showChangePassword)}
@@ -215,6 +238,7 @@ function Profile() {
           </div>
         )}
 
+        {/* Delete password */}
         <div className="mt-4">
           <button
             onClick={handleDeleteAccount}
@@ -230,13 +254,14 @@ function Profile() {
             <div className="flex overflow-x-auto gap-2">
               {likedSongs.map((song) => {
                 return (
-                  <div
+                  <a
+                    href={song.strMusicVid}
                     key={song.idTrack}
-                    className="h-30 border rounded-lg p-3"
+                    className="border rounded-lg p-3 min-w-30 hover hover:scale-95 transition"
                   >
                     <p>Title: {song.title}</p>
                     <p>Artist: {song.artist}</p>
-                  </div>
+                  </a>
                 );
               })}
             </div>
@@ -246,15 +271,23 @@ function Profile() {
         </div>
         <div>
           <h2>Orders</h2>
-          <div className="className=" flex overflow-x-auto gap-2>
+          <div className="className= flex overflow-x-auto gap-2">
             {orders.length > 0 ? (
               <div className="border rounded-lg p-3">
                 {orders.map((order, orderIndex) => (
-                  <div key={orderIndex}>
+                  <div key={order._id}>
+                    {" "}
+                    {/* Use _id as the key for stability */}
                     <h4>Order #{orderIndex + 1}</h4>
                     {order.items.map((item, itemIndex) => (
                       <p key={itemIndex}>{item.title}</p>
                     ))}
+                    <button
+                      onClick={() => handleDeleteOrder(order._id)}
+                      className="px-2 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-400"
+                    >
+                      Delete Order
+                    </button>
                   </div>
                 ))}
               </div>

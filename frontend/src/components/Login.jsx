@@ -1,3 +1,4 @@
+// Koushik Shaganti
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useOutletContext } from "react-router-dom";
@@ -22,17 +23,17 @@ function Login() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
-        credentials: "include", // Ensures cookies are sent
+        credentials: "include",
       });
 
-      const data = await res.text(); // Expect text response
+      const data = await res.text();
 
       if (res.ok) {
         // Store email in localStorage for Profile.jsx
         localStorage.setItem("userEmail", email);
         setErrorMsg("");
         setIsSignedIn(true);
-        navigate("/"); // Redirect to profile or home page
+        navigate("/"); // Redirects to home page
       } else {
         // Handle backend error messages
         setErrorMsg(data.message || "Login failed.");

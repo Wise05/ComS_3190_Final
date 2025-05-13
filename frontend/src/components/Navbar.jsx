@@ -1,9 +1,11 @@
+// Zephaniah Gustafson
 import React from "react";
 import { Link } from "react-router-dom";
 import Melodify_Logo from "../assets/Melodify_Logo.png";
 import Search from "./Search";
 import { useEffect } from "react";
 
+// Basically song links and stuff
 function Navbar({ openSearchBar, setOpenSearchBar, isSignedIn }) {
   useEffect(() => {
     console.log(isSignedIn);

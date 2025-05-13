@@ -68,7 +68,7 @@ function PurchaseForm({
         console.log("Order successful:", data);
         setCart([]);
         setStep("");
-        alert(data.message); // Or redirect to a success page
+        alert(data.message);
       } else {
         const errorData = await response.json();
         console.error("Order failed:", errorData);

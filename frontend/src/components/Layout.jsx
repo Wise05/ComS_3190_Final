@@ -4,6 +4,7 @@ import Navbar from "./Navbar";
 import Footbar from "./Footbar";
 import { Outlet } from "react-router-dom";
 
+// Layout puts navbar and footbar on every page
 function Layout() {
   const [openSearchBar, setOpenSearchBar] = useState(false);
   const [isSignedIn, setIsSignedIn] = useState(

@@ -1,5 +1,5 @@
 // Zephaniah Gustafson and Koushik Shaganti
-// https://www.theaudiodb.com/free_music_api
+// API credit: https://www.theaudiodb.com/free_music_api
 
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -13,18 +13,21 @@ function Artists() {
   const [likedSongs, setLikedSongs] = useState([]);
   const userEmail = localStorage.getItem("userEmail");
 
+  // search artist if there is a query in the URL
   useEffect(() => {
     if (query) {
       searchArtist(query);
     }
   }, [query]);
 
+  // search database for liked songs on render
   useEffect(() => {
     if (videoData && userEmail) {
       fetchLikedSongs();
     }
   }, [videoData, userEmail]);
 
+  // grab data from API
   const searchArtist = async (name) => {
     try {
       const response = await fetch(
@@ -35,13 +38,13 @@ function Artists() {
         throw new Error("Network response was not ok");
       }
 
-      const text = await response.text(); // get raw response text
+      const text = await response.text();
 
       if (!text) {
         throw new Error("Empty response from API");
       }
 
-      const data = JSON.parse(text); // parse it manually
+      const data = JSON.parse(text);
 
       if (data.artists) {
         setArtistData(data.artists[0]);
@@ -56,6 +59,7 @@ function Artists() {
     }
   };
 
+  // get music videos of artist from API
   const searchVideos = async (id) => {
     try {
       const response = await fetch(
@@ -79,19 +83,21 @@ function Artists() {
         return;
       }
 
+      // make sure that the data has the stuff we want
       let filteredData = data.mvids.filter(
         (vid) => vid.strTrackThumb && vid.strMusicVid
       );
 
       if (filteredData.length === 0) filteredData = null;
 
-      setVideoData(filteredData ? [...filteredData] : null); // Create a new array
+      setVideoData(filteredData ? [...filteredData] : null);
     } catch (error) {
       console.error("Error fetching videos:", error);
       setVideoData(null);
     }
   };
 
+  // Grab the images for the slideshow
   const getImages = () => {
     const urls = [];
 
@@ -112,6 +118,7 @@ function Artists() {
     ));
   };
 
+  // get user's liked songs based on email
   const fetchLikedSongs = async () => {
     try {
       const response = await fetch(`http://localhost:8080/artist/${userEmail}`);
@@ -144,6 +151,7 @@ function Artists() {
     }
   };
 
+  // put liked song into database
   const likeSong = async (video) => {
     if (!userEmail) {
       console.error("User not logged in.");
@@ -159,6 +167,7 @@ function Artists() {
             idTrack: video.idTrack,
             title: video.strTrack,
             artist: artistData.strArtist,
+            strMusicVid: video.strMusicVid,
           },
         }),
       });
@@ -166,9 +175,10 @@ function Artists() {
         setLikedSongs((prev) => [
           ...prev,
           {
-            idTrack: video.idTrack, // Use idTrack here
+            idTrack: video.idTrack,
             title: video.strTrack,
             artist: artistData.strArtist,
+            strMusicVid: video.strMusicVid,
           },
         ]);
       } else {
@@ -180,6 +190,7 @@ function Artists() {
     }
   };
 
+  // put updated liked songs into database after filtering unliked song
   const unlikeSong = async (idTrack) => {
     if (!userEmail) {
       console.error("User not logged in.");
@@ -211,9 +222,11 @@ function Artists() {
       <div>
         {artistData ? (
           <div className="mx-auto">
+            {/* TITLE */}
             <h1 className="text-6xl  bg-blue-500 font-bold text-white text-center mb-6 py-3">
               {artistData.strArtist}
             </h1>
+            {/* SLIDESHOW */}
             <div className="sm:w-md md:w-2xl my-2 mx-auto">
               <Slideshow>{getImages()}</Slideshow>
             </div>
@@ -229,6 +242,7 @@ function Artists() {
         )}
       </div>
       <div className="max-w-7xl mx-auto">
+        {/* RENDER VIDEO DATA */}
         {videoData ? (
           <div>
             <h2 className="text-4xl font-bold text-center py-4">
@@ -257,6 +271,7 @@ function Artists() {
                         </h3>
                       </a>
 
+                      {/* Like button */}
                       <button
                         className="absolute right-1 bottom-1 z-20 pointer-events-auto"
                         onClick={() => {

@@ -1,6 +1,7 @@
-import React from "react";
+// Zephaniah Gustafson and Koushik Shaganti
 import { Link } from "react-router-dom";
 
+// Basically just some links and stuff
 function footbar() {
   return (
     <div className="bg-black h-10 relative bottom-0 flex inset-0 z-1 pointer-events-none text-white">

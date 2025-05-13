@@ -1,8 +1,9 @@
-import React from "react";
+// Zephaniah Gustafson and Koushik Shaganti
 import Slideshow from "./Slideshow";
 import { Link } from "react-router-dom";
 import { useOutletContext } from "react-router-dom";
 
+// Basically just some links and a slideshow of stock photos
 function Home() {
   const { setOpenSearchBar } = useOutletContext();
   const isSignedIn = localStorage.getItem("userEmail");

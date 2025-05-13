@@ -239,6 +239,7 @@ app.post("/login", async (req, res) => {
   }
 });
 
+// create an entry in artist with user's email
 app.post("/artist", async (req, res) => {
     try {
         const { email } = req.body;
@@ -266,12 +267,12 @@ app.post("/artist", async (req, res) => {
     }
 });
 
-// PUT /artist/like - Add a song to the user's liked songs
+// add a song to the user's liked songs
 app.put("/artist/like", async (req, res) => {
     try {
         const { email, song } = req.body;
 
-        if (!email || !song || !song.idTrack || !song.title || !song.artist) {
+        if (!email || !song || !song.idTrack || !song.title || !song.artist || !song.strMusicVid) {
             return res.status(400).json({ message: "Email and complete song info (idTrack, title, artist) are required." });
         }
 
@@ -283,6 +284,7 @@ app.put("/artist/like", async (req, res) => {
                         idTrack: song.idTrack,
                         title: song.title,
                         artist: song.artist,
+                        strMusicVid: song.strMusicVid,
                     },
                 },
             },
@@ -302,7 +304,7 @@ app.put("/artist/like", async (req, res) => {
 });
 
 
-// PUT /artist/unlike - Remove a song from the user's liked songs (using song ID)
+// remove a song from the user's liked songs (using idTrack)
 app.put("/artist/unlike", async (req, res) => {
     try {
         const { email, songId } = req.body;
@@ -330,7 +332,7 @@ app.put("/artist/unlike", async (req, res) => {
     }
 });
 
-// GET /artist/:email - Get the liked songs for a specific user
+// get the liked songs for a specific user
 app.get("/artist/:email", async (req, res) => {
     try {
         const { email } = req.params;
@@ -353,6 +355,7 @@ app.get("/artist/:email", async (req, res) => {
     }
 });
 
+// put order into order collection
 app.post("/orders", async (req, res) => {
     try {
         const { cart, cartTotal, paymentInfo } = req.body;
@@ -366,7 +369,7 @@ app.post("/orders", async (req, res) => {
                 id: item.id,
                 title: item.title,
                 price: item.price,
-                quantity: 1, // Assuming cart contains individual items
+                quantity: 1, 
             })),
             total: cartTotal,
             customerInfo: {
@@ -411,3 +414,28 @@ app.get("/orders", async (req, res) => {
         res.status(500).json({ message: "Error retrieving orders." });
     }
 });
+
+// delete order
+const { ObjectId } = require("mongodb"); // Ensure this is imported
+
+app.delete("/orders/:id", async (req, res) => {
+  try {
+    const orderId = req.params.id;
+
+    if (!ObjectId.isValid(orderId)) {
+      return res.status(400).json({ message: "Invalid order ID." });
+    }
+
+    const result = await db.collection("order").deleteOne({ _id: new ObjectId(orderId) });
+
+    if (result.deletedCount === 1) {
+      res.status(200).json({ message: "Order deleted successfully." });
+    } else {
+      res.status(404).json({ message: "Order not found." });
+    }
+  } catch (error) {
+    console.error("Error deleting order:", error);
+    res.status(500).json({ message: "Failed to delete order." });
+  }
+});
+

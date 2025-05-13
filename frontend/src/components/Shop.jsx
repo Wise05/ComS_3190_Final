@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Cart from "./Cart";
 import PurchaseForm from "./PurchaseForm";
-import PurchaseSummary from "./PurchaseSummary";
 
 function Shop() {
   const [products, setProducts] = useState([]);

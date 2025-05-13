@@ -1,5 +1,4 @@
-import React, { useEffect } from "react";
-
+// Zephaniah Gustafson
 function Cart({ cart, cartTotal, setStep, removeFromCart }) {
   const itemCounts = cart.reduce((acc, item) => {
     if (acc[item.id]) {
