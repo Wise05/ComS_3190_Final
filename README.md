@@ -3,11 +3,11 @@
 This was the final project for the _Introduction to User Interfaces_ class required for the software engineering program at Iowa State University.
 
 The project included the following tools
-*react
-*node.js
-*express
-*mongodb
-*tailwindcss
+* react
+* node.js
+* express
+* mongodb
+* tailwindcss
 
 ##### 💡 Idea:
 The project was intended to be a music sharing website where users could visit artists' pages, like and review their music, read reviews from other users, and also purchase artists' merchandise.
